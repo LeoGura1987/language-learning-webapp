@@ -1,36 +1,89 @@
-let index = 0; // 記錄目前顯示的詞彙索引
-let words = []; // 存放從 JSON 檔載入的詞彙陣列
+let index = 0;               // 目前詞彙索引
+let words = [];              // 詞彙資料陣列
+let mode = 'card';           // 模式："card" 或 "quiz"
+let correctCount = 0;        // 答對的題數
 
-// 當網頁載入時呼叫：讀取 JSON 中的詞彙資料
+// 載入 JSON 詞彙資料
 async function loadWords() {
-  const res = await fetch('data/words.json'); // 使用 fetch 讀取 JSON 檔案
-  words = await res.json(); // 解析 JSON 為 JavaScript 陣列
-  showWord(); // 顯示第一組詞彙
+  const res = await fetch('data/words.json');
+  words = await res.json();
+  showWord();
 }
 
-// 顯示目前 index 的詞彙卡片內容
+// 顯示詞彙內容：依據模式決定顯示方式
 function showWord() {
-  const word = words[index]; // 取得目前的詞彙物件
-  document.getElementById('card').innerHTML = `  
-    <p>中文：${word.zh} <button onclick="speak('${word.zh}', 'zh-TW')">發音</button></p>
-    <p>English：${word.en} <button onclick="speak('${word.en}', 'en-US')">發音</button></p>
-    <p>日本語：${word.ja} <button onclick="speak('${word.ja}', 'ja-JP')">発音</button></p>
-    <p>한국어：${word.ko} <button onclick="speak('${word.ko}', 'ko-KR')">발음</button></p>
+  const word = words[index];
+  if (mode === 'card') {
+    document.getElementById('card').innerHTML = `
+      <p>中文：${word.zh} <button onclick="speak('${word.zh}', 'zh-TW')">發音</button></p>
+      <p>English：${word.en} <button onclick="speak('${word.en}', 'en-US')">發音</button></p>
+      <p>日本語：${word.ja} <button onclick="speak('${word.ja}', 'ja-JP')">発音</button></p>
+      <p>한국어：${word.ko} <button onclick="speak('${word.ko}', 'ko-KR')">발음</button></p>
+    `;
+  } else if (mode === 'quiz') {
+    showQuiz();
+  }
+}
+
+// 顯示選擇題（從英文翻成中文）
+function showQuiz() {
+  const word = words[index];
+  const correct = word.zh;
+
+  // 產生隨機選項
+  let options = [correct];
+  while (options.length < 4) {
+    const r = words[Math.floor(Math.random() * words.length)].zh;
+    if (!options.includes(r)) options.push(r);
+  }
+
+  // 洗牌選項
+  options = options.sort(() => Math.random() - 0.5);
+
+  // 顯示題目
+  document.getElementById('card').innerHTML = `
+    <p>英文：${word.en}</p>
+    ${options.map(opt =>
+      `<button onclick="checkAnswer('${opt}', '${correct}')">${opt}</button>`
+    ).join('<br>')}
   `;
 }
 
-// 切換到下一組詞彙（按下「下一個」按鈕時呼叫）
+// 使用者選擇答案後檢查正確性
+function checkAnswer(selected, correct) {
+  if (selected === correct) {
+    alert('答對了！');
+    correctCount++;
+    updateScore();
+    nextWord();
+  } else {
+    alert('錯了，再試一次！');
+  }
+}
+
+// 下一題
 function nextWord() {
-  index = (index + 1) % words.length; // index 遞增，超過長度則從頭開始
-  showWord(); // 顯示新的詞彙
+  index = (index + 1) % words.length;
+  showWord();
 }
 
-// 使用瀏覽器語音 API 發音指定語言
+// 切換學習模式
+function switchMode() {
+  mode = (mode === 'card') ? 'quiz' : 'card';
+  document.getElementById('modeName').innerText = (mode === 'card') ? '卡片' : '測驗';
+  showWord();
+}
+
+// 發音功能
 function speak(text, lang) {
-  const utterance = new SpeechSynthesisUtterance(text); // 建立語音物件
-  utterance.lang = lang; // 設定語言，例如 zh-TW, en-US 等
-  window.speechSynthesis.speak(utterance); // 呼叫語音合成器發音
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang;
+  window.speechSynthesis.speak(utterance);
 }
 
-// 頁面載入時立即執行：載入詞彙並顯示
-loadWords();
+// 更新成績顯示
+function updateScore() {
+  document.getElementById('scoreBoard').innerText = `答對：${correctCount} 題`;
+}
+
+loadWords(); // 頁面載入時自動開始
