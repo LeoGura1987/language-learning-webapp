@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html lang="en"> <!-- 頁面語言設定為英文 -->
+<html lang="en">
 <head>
-  <meta charset="UTF-8" /> <!-- 設定網頁字元編碼為 UTF-8 -->
-  <title>語言學習 Web App</title> <!-- 標題列顯示的名稱 -->
-  <link rel="stylesheet" href="style.css" /> <!-- 連結到 CSS 樣式表 -->
+  <meta charset="UTF-8" />
+  <title>語言學習 Web App</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>語言學習卡片</h1> <!-- 頁面標題 -->
-  <div id="card"></div> <!-- 顯示語言卡片的區塊 -->
-  <button onclick="nextWord()">下一個</button> <!-- 點擊顯示下一組詞彙 -->
-  <script src="script.js"></script> <!-- 載入 JavaScript 檔案 -->
+  <h1>語言學習卡片</h1>
+
+  <!-- 模式切換按鈕 -->
+  <button onclick="switchMode()">切換模式（目前：<span id="modeName">卡片</span>）</button>
+
+  <!-- 顯示內容 -->
+  <div id="card"></div>
+
+  <!-- 下一題按鈕 -->
+  <button onclick="nextWord()">下一個</button>
+
+  <!-- 答題成績 -->
+  <div id="scoreBoard">答對：0 題</div>
+
+  <script src="script.js"></script>
 </body>
 </html>
