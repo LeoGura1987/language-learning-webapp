@@ -136,3 +136,82 @@ setupQuiz(words);                  // 建立題目邏輯
 updateProgressDisplay(words);     // 更新畫面進度
 });
 }
+
+// 初始化進度（從 localStorage 讀取）
+let progress = JSON.parse(localStorage.getItem(‘progress’)) || {};
+
+// 函式：標記某個單字已學習
+function markAsLearned(word) {
+if (!progress[word]) progress[word] = 0;   // 如果還沒記錄過，就設為 0
+progress[word]++;                          // 每次答對 +1
+localStorage.setItem(‘progress’, JSON.stringify(progress)); // 儲存進度到 localStorage
+}
+
+// 函式：更新畫面上的進度條與數字
+function updateProgressDisplay(words) {
+const learnedCount = Object.keys(progress).length; // 計算已學單字數
+const total = words.length;                        // 總單字數
+const percent = Math.round((learnedCount / total) * 100); // 百分比（四捨五入）
+
+// 更新文字顯示
+document.getElementById(‘progress-display’).textContent =
+學習進度：${learnedCount} / ${total}（${percent}%）;
+
+// 更新進度條寬度
+document.getElementById(‘progress-bar’).style.width = ${percent}%;
+}
+
+// 函式：建立單字清單並顯示於畫面上
+function renderWordList(words) {
+const container = document.getElementById(‘word-list’); // 取得容器元素
+container.innerHTML = ‘’; // 清空舊內容
+
+words.forEach(word => {
+const isLearned = progress[word.zh]; // 檢查這個單字是否已經學過
+const div = document.createElement(‘div’); // 建立一個區塊
+div.style.margin = ‘10px 0’;
+div.style.padding = ‘10px’;
+div.style.border = ‘1px solid #ccc’;
+div.style.borderRadius = ‘5px’;
+div.style.background = isLearned ? ‘#eaffea’ : ‘#fff’; // 背景變色：學過顯示綠色底
+
+// 單字顯示格式（中英日韓 + 已學習打勾符號）
+div.innerHTML = `
+  <strong>${word.zh}</strong> /
+  ${word.en} /
+  ${word.ja} /
+  ${word.ko}
+  ${isLearned ? ' ✅' : ''}
+`;
+
+container.appendChild(div); // 加到頁面中   
+  });
+}
+
+// 函式：當使用者答對一題時的處理邏輯
+function handleCorrectAnswer(word, words) {
+markAsLearned(word.zh);           // 記錄學習進度
+updateProgressDisplay(words);     // 更新畫面上的進度顯示
+renderWordList(words);            // 重新顯示單字清單（打勾）
+}
+
+// 函式：載入單字資料並初始化畫面
+function loadWords() {
+fetch(‘data/words.json’)            // 載入 JSON 檔案
+.then(res => res.json())          // 解析成 JavaScript 陣列
+.then(words => {
+updateProgressDisplay(words);   // 初始化進度顯示
+renderWordList(words);          // 顯示所有單字清單
+setupQuiz(words);               // 建立你的測驗邏輯（你已有此函式）
+});
+}
+
+loadWords(); // 程式啟動時呼叫一次
+
+handleCorrectAnswer()
+
+// 範例：你原本選擇題判斷正確的地方
+if (selected === correctAnswer) {
+handleCorrectAnswer(correctWord, words); // 呼叫這個新函式更新所有資料
+showNextQuestion();                      // 換下一題（你原本已有此功能）
+}
