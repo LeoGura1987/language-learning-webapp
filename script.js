@@ -87,3 +87,52 @@ function updateScore() {
 }
 
 loadWords(); // 頁面載入時自動開始
+
+// 載入進度資料（從 localStorage 讀取）
+let progress = JSON.parse(localStorage.getItem(‘progress’)) || {};
+// 如果沒有資料，預設為空物件
+
+// 函式：紀錄某個單字已經學過（答對一次）
+function markAsLearned(word) {
+// 如果該單字尚未有記錄，初始化為 0
+if (!progress[word]) progress[word] = 0;
+// 將答對次數 +1
+progress[word]++;
+// 將更新後的進度存回 localStorage
+localStorage.setItem(‘progress’, JSON.stringify(progress));
+}
+
+// 函式：更新畫面上顯示的進度資訊
+function updateProgressDisplay(words) {
+// 取得目前已經學過的單字數量（物件 key 數）
+const learnedCount = Object.keys(progress).length;
+// 總單字數 = 傳入的 words 陣列長度
+const total = words.length;
+// 將資訊寫入頁面上的進度區塊
+document.getElementById(‘progress-display’).textContent =
+學習進度：${learnedCount} / ${total};
+}
+
+// 範例：在選擇題答對時呼叫
+function checkAnswer(selected, correctAnswer, correctWord, words) {
+if (selected === correctAnswer) {
+// 答對時，紀錄進度
+markAsLearned(correctWord.zh);
+// 更新畫面進度資訊
+updateProgressDisplay(words);
+// 換下一題（假設你有這個函式）
+showNextQuestion();
+} else {
+alert(“答錯了，請再試一次！”);
+}
+}
+
+// 初始化畫面時，載入詞庫並設定初始進度
+function loadWords() {
+fetch(‘data/words.json’)
+.then(res => res.json())             // 讀取 JSON 檔案
+.then(words => {
+setupQuiz(words);                  // 建立題目邏輯
+updateProgressDisplay(words);     // 更新畫面進度
+});
+}
