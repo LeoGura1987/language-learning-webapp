@@ -20,6 +20,18 @@
   <!-- 答題成績 -->
   <div id="scoreBoard">答對：0 題</div>
 
+  <!-- 顯示進度條與數字 -->
+  <div id="progress-container" style="margin: 1em 0;">
+    <div id="progress-display">學習進度：0 / 0</div>
+    <div style="width: 100%; background: #eee; border-radius: 5px; overflow: hidden;">
+      <div id="progress-bar" style="width: 0%; height: 10px; background: #4caf50;"></div>
+    </div>
+  </div>
+
+  <!-- 單字區塊（由 JS 動態產生） -->
+  <div id="word-list"></div>
+
+
   <script src="script.js"></script>
 </body>
 </html>
