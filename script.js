@@ -1,31 +1,12 @@
-let index = 0;
-let words = [];
-
-async function loadWords() {
-  const res = await fetch('data/words.json');
-  words = await res.json();
-  showWord();
+body {
+  font-family: sans-serif; /* 設定網頁字型 */
+  text-align: center;      /* 文字置中 */
+  margin-top: 2rem;        /* 頁面上邊距 */
 }
 
-function showWord() {
-  const word = words[index];
-  document.getElementById('card').innerHTML = `
-    <p>中文：${word.zh} <button onclick="speak('${word.zh}', 'zh-TW')">發音</button></p>
-    <p>English：${word.en} <button onclick="speak('${word.en}', 'en-US')">發音</button></p>
-    <p>日本語：${word.ja} <button onclick="speak('${word.ja}', 'ja-JP')">発音</button></p>
-    <p>한국어：${word.ko} <button onclick="speak('${word.ko}', 'ko-KR')">발음</button></p>
-  `;
+#card {
+  border: 1px solid #ccc;  /* 邊框樣式 */
+  padding: 1rem;           /* 內距：讓內容不貼邊 */
+  margin: 1rem auto;       /* 外距，上下 1rem，自動左右置中 */
+  max-width: 300px;        /* 最大寬度限制 */
 }
-
-function nextWord() {
-  index = (index + 1) % words.length;
-  showWord();
-}
-
-function speak(text, lang) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang;
-  window.speechSynthesis.speak(utterance);
-}
-
-loadWords();
