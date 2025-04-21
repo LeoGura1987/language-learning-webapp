@@ -33,6 +33,22 @@
 
 
   <script src="script.js"></script>
+  
+  <div id="chat-toggle" onclick="toggleChat()">💬 開啟練習對話</div>
+  <div id="chat-box" style="display:none;">
+    <div id="chat-log"></div>
+    <div id="chat-input">
+      <select id="chat-lang">
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+      </select>
+      <input type="text" id="chat-message" placeholder="輸入訊息..." onkeydown="if(event.key==='Enter') sendMessage()">
+      <button onclick="sendMessage()">送出</button>
+    </div>
+  </div>
+
 </body>
 </html>
 
