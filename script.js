@@ -130,3 +130,73 @@ function renderWordList() {
     container.appendChild(div);
   });
 }
+
+// 模擬對話資料庫（根據語言與關鍵詞）
+const chatResponses = {
+zh: {
+你好: “你好呀！今天想學什麼呢？”,
+再見: “下次再見！”,
+吃飯: “你喜歡吃什麼？我可以教你食物單字喔！”,
+default: “我還在學習中，請試著輸入常見的句子。”
+},
+en: {
+hello: “Hi there! What would you like to learn today?”,
+bye: “See you next time!”,
+eat: “What do you like to eat? I can teach you food words!”,
+default: “I’m still learning. Try common phrases!”
+},
+ja: {
+こんにちは: “こんにちは！今日は何を勉強したい？”,
+さようなら: “またね！”,
+食べる: “何が好き？食べ物の単語を教えるよ！”,
+default: “まだ勉強中です。簡単な言葉を試してみてね。”
+},
+ko: {
+안녕하세요: “안녕하세요! 오늘 뭐 배우고 싶어요?”,
+안녕히: “다음에 또 봐요!”,
+먹다: “무엇을 좋아해요? 음식 단어를 알려줄게요!”,
+default: “아직 공부 중이에요. 쉬운 문장을 입력해 주세요.”
+}
+};
+
+// 切換聊天視窗顯示
+function toggleChat() {
+const box = document.getElementById(“chat-box”);
+box.style.display = box.style.display === “none” ? “flex” : “none”;
+}
+
+// 發送聊天訊息
+function sendMessage() {
+const input = document.getElementById(“chat-message”);
+const lang = document.getElementById(“chat-lang”).value;
+const log = document.getElementById(“chat-log”);
+const msg = input.value.trim();
+if (!msg) return;
+
+// 顯示使用者訊息
+const userDiv = document.createElement(“div”);
+userDiv.textContent = “你：” + msg;
+userDiv.style.textAlign = “right”;
+log.appendChild(userDiv);
+
+// 回應處理（簡單關鍵詞比對）
+let reply = chatResponses[lang].default;
+for (const key in chatResponses[lang]) {
+if (msg.includes(key)) {
+reply = chatResponses[lang][key];
+break;
+}
+}
+
+// 顯示 AI 回應
+const botDiv = document.createElement(“div”);
+botDiv.textContent = “AI：” + reply;
+log.appendChild(botDiv);
+log.scrollTop = log.scrollHeight;
+
+// 發音（使用既有 speak 函式）
+const langMap = { zh: “zh-TW”, en: “en-US”, ja: “ja-JP”, ko: “ko-KR” };
+speak(reply, langMap[lang]);
+
+input.value = “”;
+}
